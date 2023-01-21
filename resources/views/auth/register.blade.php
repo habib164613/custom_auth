@@ -15,6 +15,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!-- Custom Theme files -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
 <link href="{{asset('css/costum.css')}}" rel="stylesheet" type="text/css" media="all" />
 <!-- //Custom Theme files -->
 <!-- web font -->
@@ -29,10 +31,18 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 			<div class="agileits-top">
 				<form id='createForm' >
 
-					<input class="text" type="text" name="name" placeholder="Username" >
-					<input class="text email" type="email" name="email" placeholder="Email" >
-					<input class="text" type="password" name="password" placeholder="Password" >
-					<input class="text w3lpass" type="password" name="password" placeholder="Confirm Password" >
+					<input class="form-control" type="text" name="name" placeholder="Username" >
+					<div id="name_error" class="text-danger errors d-none"></div>
+
+					<input  class="form-control email" type="email" name="email" placeholder="Email" >
+					<div id="emailError" class="text-danger errors d-none"></div>
+
+					<input class="form-control" type="password"  name="password" placeholder="Password" >
+					<div id="passwordError" class="text-danger errors d-none"></div>
+
+					<input class="form-control" type="password"  name="password_confirmation" placeholder="Confirm Password" >
+					<div id="passwordRetypeError" class="text-danger errors d-none"></div>
+
 					<div class="wthree-text">
 						<label class="anim">
 							<input type="checkbox" class="checkbox" >
@@ -43,6 +53,13 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					<input type="submit" value="SIGNUP">
 				</form>
 				<p>Don't have an Account? <a href="#"> Login Now!</a></p>
+
+
+
+
+
+
+
 			</div>
 		</div>
 		<!-- copyright -->
@@ -85,10 +102,21 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				contentType: false,
                 processData: false,
 				success: function (response) {
-					if (response.status==400) {
+
+					if (response.status==400)
+					{
+						$('.errors').html('');
+						$('.errors').removeClass('d-none');
+						$('#name_error').text(response.errors.name);
+						$('#emailError').text(response.errors.email);
+						$('#passwordError').text(response.errors.password);
 						console.log(response);
-					} else {
-						console.log(response);
+
+					}
+					else
+					{
+						$('.errors').html('');
+						$('.errors').addClass('d-none');
 					}
 				}
 			});

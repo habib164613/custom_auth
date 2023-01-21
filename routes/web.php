@@ -14,9 +14,5 @@ use App\Http\Controllers\customAuthController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
  
- route::resource('customers',customAuthController::class);
+ Route::resource('customers',customAuthController::class);

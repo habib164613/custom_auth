@@ -37,16 +37,17 @@ class customAuthController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'name'=>'required',
-            'email'=>'required|email|unique:customers,email',
-            'password'=>'required|min:8|max:25',
+            'name'     => 'required',
+            'email'    => 'required|email|unique:customers,email',
+            'password' => 'required|min:8|max: 25|confirmed',
+            'password_confirmation'=>'required|min:8|max:25',
 
 
         ]);
         if ($validator->fails()) {
            return response()->json([
             'status'=> 400,
-            'errors'=> $validator->messages(),
+            'errors'=> $validator->messages()
            ]);
         } else {
             $customers               = new customer;
