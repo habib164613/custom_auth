@@ -15,7 +15,8 @@ class customAuthController extends Controller
      */
     public function index()
     {
-        return view('auth.index');
+        $data['customers'] = customer::all();   
+        return view('auth.index',$data);
     }
 
     /**
@@ -36,24 +37,30 @@ class customAuthController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(),[
-            'name'     => 'required',
-            'email'    => 'required|email|unique:customers,email',
-            'password' => 'required|min:8|max: 25|confirmed',
-            'password_confirmation'=>'required|min:8|max:25',
+            'name'                  => 'required',
+            'email'                 => 'required|email|unique:customers,email',
+            'password'              => 'required|min:8|max:25|confirmed',
+            'password_confirmation' => 'required|min:8|max:25',
+            'term_and_condition'    => 'required',
 
 
         ]);
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
            return response()->json([
             'status'=> 400,
             'errors'=> $validator->messages()
            ]);
-        } else {
-            $customers               = new customer;
-            $customers->name    = $request->input('name');
-            $customers->email = $request->input('email');
-            $customers->password = $request->input('password');
+        }
+        else
+        {
+            $customers                     = new customer;
+            $customers->name               = $request->input('name');
+            $customers->email              = $request->input('email');
+            $customers->password           = $request->input('password');
+            $customers->term_and_condition = $request->terms_and_conditions == 'on' ? 1 : 0;
             $customers->save();
 
             return response()->json([
