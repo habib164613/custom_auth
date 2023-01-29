@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\userController;
 use App\Http\Controllers\customAuthController;
 
 /*
@@ -15,4 +16,11 @@ use App\Http\Controllers\customAuthController;
 */
 
  
+ Route::POST('customers/loginAction','App\Http\Controllers\customAuthController@loginAction'::class)->name('loginAction');
  Route::resource('customers',customAuthController::class);
+
+//  auth test
+// Route::middleware(['auth'])->group( function(){
+//     Route::get('user',[userController::class,'dashboard'])->name('user');
+
+// } );
