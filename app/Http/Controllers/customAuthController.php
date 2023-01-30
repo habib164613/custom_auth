@@ -49,10 +49,10 @@ class customAuthController extends Controller
             'errors'=> $validator->messages(),
            ]);
         } else {
-            $customers               = new customer;
-            $customers->name    = $request->input('name');
-            $customers->email = $request->input('email');
-            $customers->password = $request->input('password');
+            $customers           =     new customer;
+            $customers->name     =     $request->input('name');
+            $customers->email    =     $request->input('email');
+            $customers->password =     $request->input('password');
             $customers->save();
 
             return response()->json([
