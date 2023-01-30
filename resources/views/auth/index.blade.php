@@ -11,9 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     {{-- fontawesome icons --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    {{-- toaster --}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css
+    ">
     <title>Custom Auth</title>
     <style>
         #show_pass {
@@ -280,7 +282,7 @@
                             @csrf
                             @method('DELETE')
                             <button deleteUrl="{{ route('customers.destroy',$customer->id) }}"
-                                value="{{ $customer->id }}" class="deleteBtn btn btn-danger">Edit</button>
+                                value="{{ $customer->id }}" class="deleteBtn btn btn-danger">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -298,6 +300,9 @@
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+    integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
@@ -310,13 +315,11 @@
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
     </script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js
+    " ></script>
 
 
 
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
-        integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
     <script>
@@ -347,24 +350,27 @@
             });
 
             // create
+            
             $(document).on('submit', '#createForm', function (e) {
                 e.preventDefault();
+                
                 let formData = new FormData($('#createForm')[0]);
+                
                 $.ajax({
                     type: "post",
                     url: "{{route('customers.store')}}",
                     data: formData,
                     contentType: false,
                     processData: false,
-                    success: function (response) {
+                    success: function (res) {
 
-                        if (response.status == 400) {
+                        if (res.status == 400) {
                             $('.errors').html('');
                             $('.errors').removeClass('d-none');
-                            $('#name_error').text(response.errors.name);
-                            $('#emailError').text(response.errors.email);
-                            $('#passwordError').text(response.errors.password);
-                            $('#term_condtion_Error').text(response.errors
+                            $('#name_error').text(res.errors.name);
+                            $('#emailError').text(res.errors.email);
+                            $('#passwordError').text(res.errors.password);
+                            $('#term_condtion_Error').text(res.errors
                                 .term_and_condition);
 
 
@@ -373,12 +379,14 @@
                             $('.errors').html('');
                             $('.errors').addClass('d-none');
                             dataCelar();
-                            Swal.fire(
-                                'Customer Added!',
-                                'Your Customer Addes Successfully!',
-                                'success'
-                            )
+                            // Swal.fire(
+                            //     'Customer Added!',
+                            //     'Your Customer Addes Successfully!',
+                            //     'success'
+                            // )
+                            toastr.success('Your Customer Added Successfully!', 'Customer Added!')
                             $('.table').load(location.href + ' .table');
+
 
                         }
                     }
@@ -391,7 +399,7 @@
                 let edit_id = $(this).val();
                 let edit_url = $(this).attr('edit_url');
                 let updateUrl = $(this).attr('updateUrl');
-
+                
                 $.ajax({
                     type: "GET",
                     url: edit_url,
@@ -403,11 +411,13 @@
                             $('#updateForm').attr('action', updateUrl);
 
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Your Customer Not Found!',
-                            })
+                            // Swal.fire({
+                            //     icon: 'error',
+                            //     title: 'Oops...',
+                            //     text: 'Your Customer Not Found!',
+                            // })
+                            toastr.error('Customer 404!. Your Customer Not Found!')
+
                         }
 
                     }
@@ -428,7 +438,8 @@
                     contentType: false,
                     processData: false,
                     success: function (res) {
-
+                        
+                        console.log(res);
                         if (res.status == 400) {
                             $('.errors').html('');
                             $('.errors').removeClass('d-none');
@@ -436,16 +447,18 @@
                             $('#editemailError').text(res.errors.email);
 
                         } else {
+                            console.log(res);
 
                             $('.errors').html('');
                             $('.errors').addClass('d-none');
                             $('#customerUpdateModal').find('#closeBtn')[0].click();
-                            Swal.fire(
-                                'Customer updated!',
-                                'Your Customer updated Successfully!',
-                                'success'
-                            )
+                            // Swal.fire(
+                            //     'Customer updated!',
+                            //     'Your Customer updated Successfully!',
+                            //     'success'
+                            // )
                             $('.table').load(location.href + ' .table');
+                            toastr.success('Your Customer Updated Successfully!', 'Customer Updated!')
 
                         }
                     }
@@ -464,11 +477,13 @@
                 success: function (res) {
                     
                     if (res.status==404) {
-                        Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Your Customer Not Found!',
-                        })
+                        // Swal.fire({
+                        // icon: 'error',
+                        // title: 'Oops...',
+                        // text: 'Your Customer Not Found!',
+                        // })
+                        toastr.error('Customer 404!. Your Customer Not Found!')
+
                         
                     } else {
                         $('#nameShow').text(res.customer.name);
@@ -511,12 +526,13 @@
                             },
                             dataType: dataType,
                             success: function (response) {
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Your file has been deleted.',
-                                    'success'
-                                )
+                                // Swal.fire(
+                                //     'Deleted!',
+                                //     'Your file has been deleted.',
+                                //     'success'
+                                // )
                                 $('.table').load(location.href + ' .table');
+                                toastr.success('Your Customer Updated Successfully!', 'Customer Updated!')
 
                             }
                         });
@@ -571,7 +587,7 @@
 
         });
 
-    </script>
+    </script
 </body>
 
 </html>

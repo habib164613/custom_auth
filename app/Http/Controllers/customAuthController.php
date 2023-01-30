@@ -29,8 +29,43 @@ class customAuthController extends Controller
      */
     public function create()
     {
-       return view('auth.register');
     }
+
+
+    /**
+     * register methos
+     */
+    public function register()
+    {
+        return view('auth.register');
+    }
+
+
+    /**
+     * register methos
+     */
+    public function login()
+    {
+        return view('auth.login');
+    }
+
+
+    /**
+     * register methos
+     */
+    public function loginAction(Request $request)
+    {
+        $data = ['password'=>$request->password,'email'=>$request->email];
+
+        if (Auth::guard('customer')->attempt($data)) {
+            return redirect()->route('customer');
+        }else
+        {
+            return redirect()->back();
+        }
+    }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -54,30 +89,26 @@ class customAuthController extends Controller
 
         if ($validator->fails())
         {
-           return response()->json([
-            'status'=> 400,
-            'errors'=> $validator->messages()
-           ]);
+        //    return response()->json([
+        //     'status'=> 400,
+        //     'errors'=> $validator->messages()
+        //    ]);
+        return redirect()->route('register')->withErrors($validator);
         }
         else
         {
-        //     $customers                     = new customer;
-        //     $customers->name               = $request->input('name');
-        //     $customers->email              = $request->input('email');
-        //     $customers->password           = Hash::make($request->input('password'));
-        //     $customers->term_and_condition = $request->term_and_condition == 'on' ? 1 : 0;
-        //     $customers->save();
-
         customer::create([
             'name'               => $request->name,
             'email'              => $request->email,
             'term_and_condition' => 1,
             'password'           => Hash::make($request->password),
         ]);
-            return response()->json([
-                'status' => 200,
-                'message' => 'The customer Created Successfully'
-            ]);
+            // return response()->json([
+            //     'status' => 200,
+            //     'message' => 'The customer Created Successfully'
+            // ]);
+            return redirect()->route('login');
+
         }
         
     }
@@ -90,6 +121,7 @@ class customAuthController extends Controller
      */
     public function show($id)
     {
+
         $customer = customer::find($id);
         $created_at = $customer->created_at->format('d/m/Y');
         $updated_at = $customer->updated_at->format('d/m/Y');
@@ -101,14 +133,6 @@ class customAuthController extends Controller
         }
         
     }
-
-    /**
-     * storage file in our server
-     * delete old file and replece it with new
-     * time() 21312312312312.phg
-     */
-
-
 
 
 
@@ -148,11 +172,10 @@ class customAuthController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(),[
         'name'                  => 'required',
-        'email'                 => 'required|email|unique:customers,email,' . $id,
-
-
+        'email'                 => 'required|email|unique:customers,email,'.$id,
         ]);
 
         if ($validator->fails())
@@ -190,25 +213,4 @@ class customAuthController extends Controller
     }
 
 
-    /**
-     * login action method
-     * 
-     */
-    public function loginAction(Request $request)
-    {
-        $data = [
-            'email' => 'required|email',
-            'password' => 'required',
-        ];
-        $customer = customer::where('email', $request->email)->first();
-        if (Auth::attempt($data) && Hash::check($request->password, $customer->password)) {
-            return redirect()->route('user');
-        }
-         else {
-            $request->session()->flush('login_error', 'Invalid email or password.');
-            return redirect()->route('customers.index');
-
-        }
-        
-    }
 }

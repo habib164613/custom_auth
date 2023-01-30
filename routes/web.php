@@ -14,10 +14,21 @@ use App\Http\Controllers\customAuthController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', function () {
+    return view('welcome');
+});
 
  
- Route::POST('customers/loginAction','App\Http\Controllers\customAuthController@loginAction'::class)->name('loginAction');
- Route::resource('customers',customAuthController::class);
+
+ Route::GET('register','App\Http\Controllers\customAuthController@register'::class)->name('register');
+ Route::GET('login','App\Http\Controllers\customAuthController@login'::class)->name('login');
+ Route::POST('loginAction','App\Http\Controllers\customAuthController@loginAction'::class)->name('loginAction');
+
+ 
+Route::middleware('CustomerAuth')->group(function(){
+    Route::resource('customers',customAuthController::class);
+
+});
 
 //  auth test
 // Route::middleware(['auth'])->group( function(){

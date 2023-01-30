@@ -1,9 +1,3 @@
-<!--
-Author: Colorlib
-Author URL: https://colorlib.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,9 +23,12 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		<h1>Creative SignUp Form</h1>
 		<div class="main-agileinfo">
 			<div class="agileits-top">
-				<form id='createForm' >
-
+				<form id='createForm'  method="post" action="{{ route('customers.store') }}">
+					@csrf
 					<input class="form-control" type="text" name="name" placeholder="Username" >
+					@if($errors->has('name'))
+					<div class="text-danger">{{ $errors->first('name') }}</div>
+					@endif
 					<div id="name_error" class="text-danger errors d-none"></div>
 
 					<input  class="form-control email" type="email" name="email" placeholder="Email" >
@@ -45,14 +42,14 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
 					<div class="wthree-text">
 						<label class="anim">
-							<input type="checkbox" class="checkbox" >
+							<input type="checkbox" name="term_and_condition" class="checkbox" >
 							<span>I Agree To The Terms & Conditions</span>
 						</label>
 						<div class="clear"> </div>
 					</div>
 					<input type="submit" value="SIGNUP">
 				</form>
-				<p>Don't have an Account? <a href="#"> Login Now!</a></p>
+				<p>Don't have an Account? <a href="{{ route('login') }}"> Login Now!</a></p>
 
 
 
@@ -82,46 +79,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	</div>
 	<!-- //main -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-		
-		$(document).ready(function () {
-			$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
-			
-		// create
-		$(document).on('submit','#createForm', function (e) {
-			e.preventDefault();
-			let formData= new FormData($('#createForm')[0]);
-			$.ajax({
-				type: "post",
-				url: "{{route('customers.store')}}",
-				data:formData ,
-				contentType: false,
-                processData: false,
-				success: function (response) {
-
-					if (response.status==400)
-					{
-						$('.errors').html('');
-						$('.errors').removeClass('d-none');
-						$('#name_error').text(response.errors.name);
-						$('#emailError').text(response.errors.email);
-						$('#passwordError').text(response.errors.password);
-						console.log(response);
-
-					}
-					else
-					{
-						$('.errors').html('');
-						$('.errors').addClass('d-none');
-					}
-				}
-			});
-		});
-		});
-	</script>
+   
 </body>
 </html>
