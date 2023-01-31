@@ -122,6 +122,13 @@
                             <div id="editemailError" class="text-danger errors d-none"></div>
                         </div>
 
+                        <div class="mb-3">
+                            <img id="previewPhoto" class="img-thumbnail"  src="" alt="">
+                            <input id="editPhoto" class="form-control" type="file" name="photo"
+                                placeholder="Photo">
+                            <div id="editemailError" class="text-danger errors d-none"></div>
+                        </div>
+
 
 
                 </div>
@@ -245,8 +252,8 @@
     <div class="container">
         <div class="row p-5 justify-content-center">
             <div class="col-md-12">
-                <a data-bs-toggle="modal" data-bs-target="#loginModal" href="{{route('customers.create')}}"
-                    class="btn btn-danger text-capitalize float-start">login</a>
+                <a  href="{{route('logout')}}"
+                    class="btn btn-danger text-capitalize float-start">Logout</a>
 
                 <a data-bs-toggle="modal" data-bs-target="#customerCreateModal" href="{{route('customers.create')}}"
                     class="btn btn-primary text-capitalize float-end">register</a>
@@ -258,7 +265,7 @@
                     <th scope="col">ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Password</th>
+                    <th scope="col">Photo</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -268,7 +275,10 @@
                     <td>{{ $customer->id }}</td>
                     <td>{{ $customer->name }}</td>
                     <td>{{ $customer->email }}</td>
-                    <td>{{ $customer->password }}</td>
+                    <td>
+                        <img height="55px" width="55px" style="object-fit: cover;" src="{{ asset('uploads/customerImg/'.$customer->photo) }}" alt="">
+
+                    </td>
                     <td>
                         <button data-bs-toggle="modal" data-bs-target="#customerShowModal" value="{{ $customer->id }}" show_url="{{ route('customers.show',$customer->id) }}" class="customerShow btn btn-info">View</button>
 
@@ -399,7 +409,7 @@
                 let edit_id = $(this).val();
                 let edit_url = $(this).attr('edit_url');
                 let updateUrl = $(this).attr('updateUrl');
-                
+                let photoPath ; 
                 $.ajax({
                     type: "GET",
                     url: edit_url,
@@ -408,6 +418,10 @@
                         if (res.status == 200) {
                             $('#editName').val(res.customers.name);
                             $('#editEmail').val(res.customers.email);
+                            photoPath = '{{ asset("uploads/customerImg/") }}'+'/'+res.customers.photo;
+
+
+                            $('#previewPhoto').attr('src',photoPath);
                             $('#updateForm').attr('action', updateUrl);
 
                         } else {

@@ -19,13 +19,18 @@ Route::get('/', function () {
 });
 
  
-
+//register
  Route::GET('register','App\Http\Controllers\customAuthController@register'::class)->name('register');
+ Route::POST('registerAction','App\Http\Controllers\customAuthController@registerAction'::class)->name('registerAction');
+
+//login
  Route::GET('login','App\Http\Controllers\customAuthController@login'::class)->name('login');
  Route::POST('loginAction','App\Http\Controllers\customAuthController@loginAction'::class)->name('loginAction');
+//logout
+ Route::GET('logout','App\Http\Controllers\customAuthController@logout'::class)->name('logout');
 
- 
-Route::middleware('CustomerAuth')->group(function(){
+
+Route::middleware('customerAuth')->group(function(){
     Route::resource('customers',customAuthController::class);
 
 });
