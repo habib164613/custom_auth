@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -55,16 +56,27 @@ class customAuthController extends Controller
      */
     public function loginAction(Request $request)
     {
-        $data = ['password'=>$request->password,'email'=>$request->email];
-
+        $data = ['email'=>$request->email,'password'=>$request->password];
+        
         if (Auth::guard('customer')->attempt($data)) {
-            return redirect()->route('customer');
+            return redirect()->route('customers.index');
         }else
         {
             return redirect()->back();
         }
     }
 
+
+    /**
+     * logout
+     */
+    public function logout()
+    {
+        
+        Session::flush();
+        Auth::guard('customer')->logout();
+        return redirect('/');
+    }
 
 
     /**
@@ -89,10 +101,10 @@ class customAuthController extends Controller
 
         if ($validator->fails())
         {
-        //    return response()->json([
-        //     'status'=> 400,
-        //     'errors'=> $validator->messages()
-        //    ]);
+           return response()->json([
+            'status'=> 400,
+            'errors'=> $validator->messages()
+           ]);
         return redirect()->route('register')->withErrors($validator);
         }
         else
@@ -103,10 +115,63 @@ class customAuthController extends Controller
             'term_and_condition' => 1,
             'password'           => Hash::make($request->password),
         ]);
-            // return response()->json([
-            //     'status' => 200,
-            //     'message' => 'The customer Created Successfully'
-            // ]);
+            return response()->json([
+                'status' => 200,
+                'message' => 'The customer Created Successfully'
+            ]);
+            dd('customer created');
+            return redirect()->route('login');
+
+        }
+        
+    }
+
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function registerAction(Request $request)
+    {
+        // dd($request->all());
+        $validator = Validator::make($request->all(),[
+            'name'                  => 'required',
+            'email'                 => 'required|email|unique:customers,email',
+            'password'              => 'required|min         : 8|max: 25|confirmed',
+            'password_confirmation' => 'required|min         : 8|max: 25',
+            'term_and_condition'    => 'accepted',
+            'photo'                 => 'required|mimes       : jpeg,jpg,png',
+
+
+        ]);
+
+
+        if ($validator->fails())
+        {
+        return redirect()->route('register')->withErrors($validator);
+        }
+        else
+        {
+
+            $customer                     = new customer;
+            $customer->name               = $request->name;
+            $customer->email              = $request->email;
+            $customer->term_and_condition = 1;
+            $customer->password           = Hash::make($request->password);
+
+            // dd($request->photo);
+            if ($request->hasfile('photo')) {
+                $file            = $request->file('photo');
+                $extention       = $file->getClientOriginalExtension();
+                $fileName        = time().'.'.$extention; // 323234234.png
+                $file->move('uploads/CustomerImg/',$fileName);
+                $customer->photo = $fileName;  
+            }
+            $customer->save();
+
             return redirect()->route('login');
 
         }
@@ -190,6 +255,21 @@ class customAuthController extends Controller
             $customer           = Customer::findOrFail($id);
             $customer->name     = $request->name;
             $customer->email    = $request->email;
+
+            if ($request->hasfile('photo')) {
+
+                $path = 'uploads/customerImg/'.$customer->photo;
+
+                if (File::exists($path)) {
+                    File::delete($path);
+                }
+
+                $file            = $request->file('photo');
+                $extention       = $file->getClientOriginalExtension();
+                $fileName        = time().'.'.$extention; // 323234234.png
+                $file->move('uploads/CustomerImg/',$fileName);
+                $customer->photo = $fileName;  
+            }
             $customer->save();
 
             return response()->json([
